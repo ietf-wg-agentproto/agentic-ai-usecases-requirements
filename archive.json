@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-12T05:25:04.279030+00:00",
+  "timestamp": "2026-11-17T06:06:12.562517+00:00",
   "repo": "tireddy2/agentic-ai-ucreq2",
   "labels": [
     {
@@ -3839,25 +3839,33 @@
       "id": "PR_kwDOSIVa8M7eYih2",
       "title": "Add AGTP to related work references",
       "url": "https://github.com/tireddy2/agentic-ai-ucreq2/pull/66",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "hoodchris",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Add AGTP to the related work references in Section 1.\r\n\r\nThe AGTP (Agent Transfer Protocol) draft family is relevant adjacent work to this requirements document. AGTP addresses a substantial subset of the requirements catalogued here (CMN-1, CMN-2, CMN-4, CMN-7; B3-1 through B3-8; B5-2; A1-1 through A1-9) through a dedicated agent-native protocol substrate rather than HTTP-based extensions.\r\n\r\nDraft family: https://datatracker.ietf.org/doc/draft-hood-independent-agtp/\r\nReference implementation: https://github.com/nomoticai/agtp\r\nFull suite specifications: https://agtp.io\r\n\r\nIncluding AGTP in the related work catalog makes the document more complete for readers evaluating the agent infrastructure landscape, regardless of which architectural approach the resulting WG pursues.",
       "createdAt": "2026-05-22T14:30:46Z",
-      "updatedAt": "2026-05-22T14:30:47Z",
+      "updatedAt": "2026-11-16T06:01:57Z",
       "baseRepository": "tireddy2/agentic-ai-ucreq2",
       "baseRefName": "main",
       "baseRefOid": "6cbc0f4fbbad40b2f09c4bc5054c7b9ba6ba6765",
       "headRepository": "hoodchris/agentic-ai-ucreq2",
       "headRefName": "patch-1",
       "headRefOid": "f5523e6a0893e9f5d4f6fe7b30aa19477b5d234f",
-      "closedAt": null,
+      "closedAt": "2026-11-16T06:01:56Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "tireddy2",
+          "authorAssociation": "OWNER",
+          "body": "Protocol proposals, such as AGTP, are input to the WG\u2019s protocol work rather than to this requirements document, so I am closing this PR.",
+          "createdAt": "2026-11-16T06:01:56Z",
+          "updatedAt": "2026-11-16T06:01:57Z"
+        }
+      ],
       "reviews": []
     },
     {
@@ -4317,21 +4325,21 @@
       "id": "PR_kwDOSIVa8M8AAAABLOwXRA",
       "title": "Add a section of deployment models",
       "url": "https://github.com/tireddy2/agentic-ai-ucreq2/pull/76",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "Lionel-971",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "According to the charter, the \"Use Cases and Requirements\" deliverable should describe \"the deployment model(s)\".\n\nThe current draft only contains the following statement:\n\n4. Use Cases\n[...]\n\"The use cases are independent of deployment model: they apply whether participants are within a single administrative domain or span several, and whether they interact directly or through intermediaries.\"\n\nwhereas there are some other parts loosely addressing this topic:\n\n4.6.1. Description\n\"In many multi-agent deployments, access to external resources such as APIs, databases, enterprise systems, or hardware interfaces is intentionally mediated through a designated mediator.\"\n[...]\n8. Security Considerations\n[...]\n\"Agent identity information is considered to be sensitive, particularly in multi-domain deployments.\"\n\nTo comply with the charter, I propose to add a new top-level section describing the possible deployment models, right before the \"Common Requirements\" section that can be then referred by the following sections\n",
       "createdAt": "2026-10-28T10:04:37Z",
-      "updatedAt": "2026-10-30T10:58:54Z",
+      "updatedAt": "2026-11-16T06:06:59Z",
       "baseRepository": "tireddy2/agentic-ai-ucreq2",
       "baseRefName": "main",
       "baseRefOid": "118e3955dedfcf3a99bab65a8ef182934c6f966a",
       "headRepository": "Lionel-971/agentic-ai-ucreq2",
       "headRefName": "Lionel-971-patch-1",
       "headRefOid": "fd419dd7ab610ae448bbc3a6f1e56fdf00667e55",
-      "closedAt": null,
+      "closedAt": "2026-11-16T06:06:58Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -4349,6 +4357,13 @@
           "body": "Thank you for your feedback.\r\nOK to remove the proposed the requirements and and transport implications.\r\nOK to keep the \u201cThe interaction between the user and the client application is out of scope.\u201d but maybe we should add \"in this use case\", as it is not a general statement.",
           "createdAt": "2026-10-30T10:58:54Z",
           "updatedAt": "2026-10-30T10:58:54Z"
+        },
+        {
+          "author": "tireddy2",
+          "authorAssociation": "OWNER",
+          "body": "Thanks Lionel. Instead of a separate section, the draft now describes deployment models in the introduction to Section 4: the use cases are independent of deployment model, and together they cover a client application on a user\u2019s device, agents hosted by different organizations, and agents reached through a mediator such as a network operator\u2019s gateway. As you suggested, Section 4.1.1 now says that the interaction between the user and the client application is out of scope.",
+          "createdAt": "2026-11-16T06:06:58Z",
+          "updatedAt": "2026-11-16T06:06:59Z"
         }
       ],
       "reviews": []
@@ -4365,7 +4380,7 @@
       "labels": [],
       "body": "According to the deployment models, a UC is added to illustrate user dialogs and possible related requirements, even if the user interface design is explicitly out of scope.  ",
       "createdAt": "2026-10-28T10:11:30Z",
-      "updatedAt": "2026-10-30T11:12:51Z",
+      "updatedAt": "2026-11-16T06:10:31Z",
       "baseRepository": "tireddy2/agentic-ai-ucreq2",
       "baseRefName": "main",
       "baseRefOid": "118e3955dedfcf3a99bab65a8ef182934c6f966a",
@@ -4390,6 +4405,13 @@
           "body": "The whole purpose of this UC was to highlight a \"Dialog between AI agents and users\" which is missing in the current draft, whereas it is part of the use cases to addressed according to the charter. On the related requirements, I agree that not all of them will have to be addressed by the agentproto WG. But it is still better to list them (when related to dialog handling) and then indicate where they will be addressed (rather than ignoring them). Maybe something that we can clarify with the WG.",
           "createdAt": "2026-10-30T11:12:51Z",
           "updatedAt": "2026-10-30T11:12:51Z"
+        },
+        {
+          "author": "tireddy2",
+          "authorAssociation": "OWNER",
+          "body": "Thanks Lionel. A correction to my earlier comment: multi-party is not out of scope by the charter. A human joining an existing dialog, and a human in the loop more generally, are not covered by the current draft and need to be discussed in the WG. They will be discussed at IETF 127.\r\n\r\nResuming from another device is covered by A1-11, and terminating a dialog by CMN-11. Authenticating and authorizing a human participant is expected to be addressed in the OAuth work.",
+          "createdAt": "2026-11-16T06:10:31Z",
+          "updatedAt": "2026-11-16T06:10:31Z"
         }
       ],
       "reviews": []
@@ -4406,7 +4428,7 @@
       "labels": [],
       "body": "Add a use case on Interactive Real-Time Agent Session to highlight specific requirements on low latency as required in 6G system",
       "createdAt": "2026-10-28T10:15:32Z",
-      "updatedAt": "2026-10-30T11:31:56Z",
+      "updatedAt": "2026-11-16T06:12:39Z",
       "baseRepository": "tireddy2/agentic-ai-ucreq2",
       "baseRefName": "main",
       "baseRefOid": "118e3955dedfcf3a99bab65a8ef182934c6f966a",
@@ -4431,6 +4453,13 @@
           "body": "Thank for your feedback. I'm not sure why you consider that user-agent-user interactions would be out of scope.\r\nIf \"Dialog between AI agents and users\" is to be covered, this use case is one of the simplest ones. About the requirements, the use case is proposed to highlight specific requirements regarding latency. Support of multi-modalities is not enough in this use case. Whatever the mechanisms defined for dialog context management, it is required that this will introduce no or minimal extra latency to enable this simple use case.",
           "createdAt": "2026-10-30T11:31:56Z",
           "updatedAt": "2026-10-30T11:31:56Z"
+        },
+        {
+          "author": "tireddy2",
+          "authorAssociation": "OWNER",
+          "body": "Thanks Lionel. A correction to my earlier comment: multi-party is not out of scope by the charter. An agent joining a call between two users is a multi-party use case, which needs to be discussed in the WG, and it will be discussed at IETF 127.\r\nOn latency: low-latency real-time audio and video are covered by A1-4. The latency added by dialog management depends on how the protocol is designed, and any new message adds some latency and processing at the peers. Keeping that low is a consideration for the protocol work.",
+          "createdAt": "2026-11-16T06:12:39Z",
+          "updatedAt": "2026-11-16T06:12:39Z"
         }
       ],
       "reviews": []

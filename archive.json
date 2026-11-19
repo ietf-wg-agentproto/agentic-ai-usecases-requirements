@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-17T06:06:12.562517+00:00",
+  "timestamp": "2026-11-19T05:33:25.312436+00:00",
   "repo": "tireddy2/agentic-ai-ucreq2",
   "labels": [
     {
@@ -738,6 +738,54 @@
           "updatedAt": "2026-08-31T17:56:24Z"
         }
       ]
+    },
+    {
+      "number": 83,
+      "id": "I_kwDOSIVa8M8AAAABgA42qQ",
+      "title": "Coverage and Overlap of the use cases in Sections 4.2\u20134.5",
+      "url": "https://github.com/tireddy2/agentic-ai-ucreq2/issues/83",
+      "state": "OPEN",
+      "author": "NiYuan224",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "I suggest clarifying the boundaries between these use cases and explaining how they can be combined. This would help reduce overlap while explicitly covering multi-hop delegation without task decomposition and authorization checkpoints without an orchestrator.\n\n- Section 4.2: No change suggested. This section describes an orchestrator decomposing a task into subtasks and delegating them to other agents.\n\n- Section 4.3: The current description ties authorization checkpoints to an orchestrator-based workflow. However, an agent can also pause and request authorization in a simple multi-hop delegation chain(A \u2192 B \u2192 C without task decomposition or an orchestrator.  I suggest retaining the current example and adding a brief example of an authorization checkpoint in a multi-hop delegation chain without an orchestrator to clarify the broader applicability.\n\n- Section 4.4: This section combines task decomposition with multi-hop delegation, which seems to overlap with Section 4.2. I suggest focusing the example on multi-hop delegation alone: A delegates a task to B, and B delegates the same task onward to C without splitting the task into subtasks.\nThe section could then explain how this pattern combines with Section 4.2: an orchestrator distributes subtasks, and the receiving agents delegate them further. This would cover both standalone delegation chains and their combination with task decomposition. We could also consider swapping Sections 4.3 and 4.4, so that both delegation patterns are introduced before authorization checkpoints.\n\n- Section 4.5: The second topology allows direct exchanges between participating agents, which distinguishes it from Section 4.2. For the first topology, where all communication goes through the coordinator, does exchanging reasoning outputs over multiple rounds introduce additional protocol requirements, or is it a different application workflow using the same communication mechanisms as Section 4.2?\nIf the requirements are the same, I suggest presenting the coordinator-mediated topology as another example in Section 4.2, while focusing Section 4.5 on direct exchanges between participating agents and any additional protocol requirements they introduce.\n\nI think these changes could make the use cases more distinct, reduce unnecessary overlap, and help avoid gaps in coverage, while explaining how the patterns can be combined.\n\nThis is just my understanding of the draft, so please let me know if I\u2019ve missed or misunderstood anything.\n",
+      "createdAt": "2026-11-17T11:19:04Z",
+      "updatedAt": "2026-11-17T11:19:04Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 84,
+      "id": "I_kwDOSIVa8M8AAAABgLbnvQ",
+      "title": "Section 4.3: add the case where the invoker withdraws permission between checkpoints",
+      "url": "https://github.com/tireddy2/agentic-ai-ucreq2/issues/84",
+      "state": "OPEN",
+      "author": "kareemn",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Following up on my comment at the mic during the agentproto session at IETF 127.\n\nSection 4.3 covers authorization at checkpoints the delegated agent asks for. I propose adding one scenario to it: the invoker withdraws permission between checkpoints while the delegated agent is unreachable. With the current text, the agent keeps acting until it reconnects.\n\n## Proposed addition to the description (4.3.1)\n\n> Between checkpoints, the invoker may withdraw permission, including while the delegated agent is unreachable. The delegated agent then stops acting until it can confirm that its authorization is still current. How long the agent can go without that confirmation is set by the deployment: short for a payment, longer for a research task.\n\n## Proposed addition to the interaction flow (4.3.2)\n\nAdd one step between checkpoints that repeats: the orchestrator confirms to the agent that its authorization is still current. If the agent can't get that confirmation, it pauses.\n\n```\n+---------------------+                        +------------+\n| Orchestrator Agent  |---Task Delegation----->|            |\n|                     |<--Progress Notif.------|            |\n|                     |---Authz Confirmation-->|  Agent(s)  |\n|                     |<--Authz Checkpoint-----|            |\n|                     |---Authz Response------>|            |\n|                     |<--Result Reporting-----|            |\n+---------------------+                        +------------+\n```\n\n## Proposed addition to the example (4.3.3)\n\nA new step between steps 2 and 3:\n\n> The closure agent loses contact with the orchestrator. While it is out of contact, the user tells the banking assistant to stop the closure. The closure agent can't confirm that its authorization is still current, so it stops before transferring the remaining balance (B2-7). When contact returns, it learns that the closure was withdrawn.\n\n## Proposed requirement (new, after B2-6)\n\n| REQ-ID | Description | Tag |\n|--------|-------------|-----|\n| B2-7 (proposed) | A delegated agent is required to stop acting when it cannot confirm that its authorization is still current, and to resume only after confirming it. | Security, Dialog |\n\n## Why the existing text doesn't cover this\n\n| Existing text | What it does | Why it misses this scenario |\n|---|---|---|\n| CMN-10 | Revocation propagates down the delegation chain. | It is a message that has to arrive. An unreachable agent never receives it. |\n| CMN-11 | Supports a dialog lifetime that can be changed. | Expiry ends the dialog. Nothing asks for the authorization to be confirmed again. |\n| CMN-12 | Rejects a dialog change that can't be confirmed as authorized. | It applies only when something about the dialog changes. |\n| B1-7, B1-8 | Check for revocation when a dialog resumes. | The check happens only on resume, after the agent has kept acting. |\n| B2-4 | Halts the subtask when a checkpoint gets no response. | It applies only after the agent asks for a checkpoint. |\n| B3-5 | The delegating agent halts when the delegated agent is unavailable. | Only the delegating side halts. The delegated agent keeps going. |\n\n## Scope\n\nThis doesn't propose a mechanism. Confirming the authorization itself stays with the OAuth and WIMSE work, as Section 5 already says. A lease that whoever authorized the task renews is one way to meet B2-7. The requirement leaves the mechanism open.\n\nThe scenario also applies to a delegation chain without an orchestrator (see #83). There, the confirmation comes from the hop that delegated the task.\n",
+      "createdAt": "2026-11-17T21:24:50Z",
+      "updatedAt": "2026-11-17T21:24:50Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 85,
+      "id": "I_kwDOSIVa8M8AAAABgLbo8w",
+      "title": "Section 4.4: add the organization running an agent in the chain, which can pause that agent's side",
+      "url": "https://github.com/tireddy2/agentic-ai-ucreq2/issues/85",
+      "state": "OPEN",
+      "author": "kareemn",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Following up on my comment at the mic during the agentproto session at IETF 127.\n\nSection 4.4 has every agent in the chain run by a different provider, each in its own administrative domain. Every party in the use case is an agent in the chain. I propose adding one party: the organization that runs one of those agents. It can see a problem with its own agent, but it isn't a participant in the dialog.\n\n## Proposed addition to the description (4.4.1)\n\n> When the chain crosses organizations, the organization running one of its agents may detect a problem, such as a prompt injection, and need to pause that agent's side of the dialog, even though the organization is not a participant. The other participants need to see that the agent was paused, and why, so they don't treat the pause as a failure and retry or delegate elsewhere.\n\n## Proposed addition to the interaction flow (4.4.2)\n\nAdd a box for the organization running Agent-3, with a pause arrow into Agent-3. Agent-3's peers see the pause and its reason.\n\n```\n  +------------------+\n  | Initiating Agent |\n  +------------------+\n      |         |\n      v         v\n +--------+  +--------+  pause   +--------------+\n |Agent-2 |  |Agent-3 |<---------| Organization |\n +--------+  +--------+          | running      |\n      |          |               | Agent-3      |\n      v          v               +--------------+\n +--------+  +--------+\n |Agent-4 |  | Tools  |\n +--------+  +--------+\n```\n\n## Proposed addition to the example (4.4.3)\n\nA new step after step 2:\n\n> The recruitment agency sees its sourcing agent behaving unexpectedly after reading a profile from the job board. The agency is not a participant in the dialog, but it runs the sourcing agent, so it pauses the sourcing agent's side (B3-11). The hiring agent receives the pause with a reason saying the operator paused the agent (B3-12). It doesn't read the pause as a timeout, so it doesn't retry or delegate the search to another agency.\n\n## Proposed requirements (new, after B3-10)\n\n| REQ-ID | Description | Tag |\n|--------|-------------|-----|\n| B3-11 (proposed) | A party that is not a participant in a dialog, but has authority over one of its participants, is required to be able to cause that participant to pause its side of the dialog. | Dialog, Security |\n| B3-12 (proposed) | Such a pause is required to carry a reason the other participants can see, distinct from timeout, transport failure, and authorization failure. | Dialog, Transport |\n\n## Why the existing text doesn't cover this\n\n| Existing text | What it does | Why it misses this scenario |\n|---|---|---|\n| Section 4 intro | Says cross-domain operation adds authentication, authorization, and privacy requirements. | Doesn't cover each domain keeping control over its own agent while a dialog is running. |\n| B3-2 | Any agent can identify who originally authorized the task. | It identifies a party, but gives no party outside the chain a way to act. |\n| Section 4.3 | The orchestrator may relay authorization requests to the invoker. | Approval flows only up the chain, to the invoker. |\n| CMN-11, CMN-12 | Dialog changes are made and checked by participants. | Only participants can affect a dialog. |\n| CMN-5, B5-1 | Errors distinguish authentication, authorization, timeout, internal, validation, and translation failures. | No reason means \"paused by a party with authority\", so peers may retry. |\n| B3-10 | Cancellation and termination propagate along the chain. | Cancellation ends the subtask. A pause keeps it so it can resume, and the party that pauses isn't in the chain. |\n\n## Scope\n\nThis doesn't propose a mechanism. How the organization proves its authority over its agent stays with the OAuth and WIMSE work, as Section 5 already says. Two existing pieces help: B3-9 propagates dialog context along the chain, so the organization can find the affected dialog, and the Section 4.6 mediator, which validates requests before invoking anything, is a natural place to enforce the pause.\n\nThe same party exists in Section 4.5 (an organization running one of the reasoning agents) and in Section 4.6 (the operator behind the gateway). Starting with 4.4 keeps the change small.\n",
+      "createdAt": "2026-11-17T21:24:51Z",
+      "updatedAt": "2026-11-17T21:24:51Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [

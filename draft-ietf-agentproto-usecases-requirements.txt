@@ -2,7 +2,7 @@
 
 
 
-Network Working Group                                           T. Reddy
+Agent Communication Protocols                                   T. Reddy
 Internet-Draft                                                 Z. Sarker
 Intended status: Informational                                     Nokia
 Expires: 25 May 2027                                              K. Yao
@@ -11,7 +11,7 @@ Expires: 25 May 2027                                              K. Yao
 
 
                  Agentic AI Use Cases and Requirements
-             draft-agentic-ai-usecases-requirements-latest
+           draft-ietf-agentproto-usecases-requirements-latest
 
 Abstract
 

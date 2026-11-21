@@ -5,9 +5,9 @@
 Network Working Group                                           T. Reddy
 Internet-Draft                                                 Z. Sarker
 Intended status: Informational                                     Nokia
-Expires: 8 May 2027                                               K. Yao
+Expires: 25 May 2027                                              K. Yao
                                                             China Mobile
-                                                         4 November 2026
+                                                        21 November 2026
 
 
                  Agentic AI Use Cases and Requirements
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 May 2027.
+   This Internet-Draft will expire on 25 May 2027.
 
 Copyright Notice
 

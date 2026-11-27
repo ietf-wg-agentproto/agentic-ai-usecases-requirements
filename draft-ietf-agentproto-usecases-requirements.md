@@ -101,7 +101,7 @@ communication security, agent identity and authentication.
 An AI agent is an autonomous, adaptive intelligent software system
 that uses AI models to complete a specific objective on behalf of
 a user or another AI agent. It makes decisions, executes actions,
-and interacts with other agents through tasks and tools. Unlike
+and interacts with other agents and tools. Unlike
 traditional software workloads that follow fixed execution paths, an
 AI agent dynamically determines at run time which actions to take,
 which tools to invoke, and which agents to collaborate with, based on
@@ -135,7 +135,7 @@ systems.
 
 **Agentic AI Communication System**: A system comprising one or more
 AI agents that communicate with each other, with users, and with
-external tools or services to complete tasks. The communication
+external tools or services to fulfil requests. The communication
 interfaces between these entities are the subject of protocol
 standardization in this document.
 
@@ -148,11 +148,11 @@ between an agent and a tool.
 **Capability**: A description of what an agent can
 perform, including inputs, outputs, constraints, and required conditions.
 
-**Delegation**: The act of an agent requesting another agent to execute
-a task on its behalf.
+**Delegation**: The act of an agent requesting another agent to act on
+its behalf.
 
 **Initiating Agent**: An agent that receives an initial request and
-delegates subtasks to peer agents. Any peer agent may itself delegate
+delegates sub-requests to peer agents. Any peer agent may itself delegate
 further to other agents without routing through the initiating agent.
 
 **Mediator**: An entity that serves as a proxy or mediator for
@@ -160,7 +160,7 @@ external tools, APIs, databases, or other resources that other agents
 require but cannot directly access.
 
 **Message**: A discrete unit of communication exchanged between agents
-containing structured data such as a task request, response, progress
+containing structured data such as a request, response, progress
 update, event notification, or control signal.
 
 **Modality**: A category of data format used for input or output in
@@ -168,14 +168,14 @@ agent communication, such as text, audio, image, or video. A dialog
 may support one or more modalities simultaneously.
 
 **Orchestrator Agent**: An agent that acts as a controller,
-coordinating the activity of other agents by decomposing goals into
-sub-tasks and delegating those sub-tasks to appropriate agents.
+coordinating the activity of other agents by decomposing requests into
+sub-requests and delegating the sub-requests to appropriate agents.
 
-**Peer Agent**: An agent that receives delegated subtasks from another
+**Peer Agent**: An agent that receives delegated sub-requests from another
 agent and may itself delegate further to other agents.
 
 **Dialog**: The correlated sequence of interactions between two or
-more participants (users, agents, and tools) over the course of a task. A
+more participants (users, agents, and tools). A
 dialog may persist across multiple individual message exchanges and network
 connections.
 
@@ -184,7 +184,7 @@ correlate and maintain a dialog. It does not include the content exchanged
 with AI models, such as conversation memory, retrieved documents, or prompts.
 
 **Task Context**: The data that a participant maintains
-to execute a task, such as conversation history and intermediate
+to process requests, such as conversation history and intermediate
 results. Task context is not carried by the protocol.
 
 **Tool**: An external service invoked by an agent to retrieve data or
@@ -192,7 +192,7 @@ perform operations. A tool is not necessarily an agent and may not participate
 in agent-to-agent communication.
 
 **User**: A human that initiates interaction with an
-AI agent by submitting a request or task.
+AI agent by submitting a request.
 
 # Common Protocol Requirements {#common-requirements}
 
@@ -210,10 +210,10 @@ Each per-use-case requirement is tagged with one or more of the following protoc
 | CMN-1  | The protocol is required to support any client application to communicate with any agent service. | Authentication |
 | CMN-2  | Mutual authentication is required between all communicating parties. | Authentication |
 | CMN-3  | All protocol traffic is required to be encrypted and integrity-protected in transit. | Security |
-| CMN-4  | A delegated agent that receives a request exceeding or contradicting the authorization scope delegated to it is required to reject it with a structured error that identifies a scope violation, distinct from other authorization failures (CMN-5). | Security |
+| CMN-4  | A participant that receives a request exceeding or contradicting the delegated authorization scope is required to reject it with a structured error that identifies a scope violation, distinct from other authorization failures (CMN-5). | Security |
 | CMN-5  | Structured error responses are required, distinguishing at minimum: authentication failure, authorization failure, timeout, and internal error. | Transport |
 | CMN-6  | The protocol is required to provide a means to signal the priority of a request, so that time-critical requests can be scheduled ahead of lower-priority ones. | Transport |
-| CMN-7  | The protocol is required to support cryptographic algorithm agility, ensuring that cryptographic algorithms used for encryption, authentication, credential verification, and integrity protection can be negotiated and updated over time, in accordance with {{RFC7696}}. | Security, Authentication |
+| CMN-7  | Cryptographic algorithm agility {{RFC7696}} is required for encryption, authentication, credential verification, and integrity protection. This is provided by TLS, WIMSE, and OAuth ({{relationship-oauth-wimse}}). | Security, Authentication |
 | CMN-8  | The validity of an agent's authentication credentials is required to be verified at the time of use. | Authentication |
 | CMN-9 | The protocol is required to support signaling that a presented credential has been revoked or is otherwise invalid. | Security |
 | CMN-10 | When a previously granted authorization is revoked, the protocol is required to notify each agent along the delegation chain, so that affected agents stop using it. | Security |
@@ -251,13 +251,13 @@ organizations or service providers ({{peer-collaborative}}), and agents
 reached through a mediator such as a network operator's agent gateway
 ({{tool-mediation}}).
 
-## Simple Single-Agent Task {#simple-single-agent}
+## Single Agent Request {#simple-single-agent}
 
 ### Description
 
-A user submits a task to an AI agent via a client application. The
+A user submits a request to an AI agent via a client application. The
 client application initiates a dialog with the agent, which creates and
-maintains it. The agent executes the task by invoking one or more tools and returns
+maintains it. The agent fulfils the request by invoking one or more tools and returns
 results to the user. The tools invoked by the agent may reside in
 the same or a different administrative domain. The agent protocol
 is required to support multiple input and output modalities, and
@@ -315,12 +315,13 @@ tool run by an airline, in a different administrative domain.
 
 3. The user picks a flight. The agent calls the airline's booking
    tool with a credential showing that the user authorized the
-   booking, without the user's airline credentials (A1-9).
+   booking, without the user's airline credentials
+   ({{relationship-oauth-wimse}}).
 
 4. The agent returns the booking confirmation, and the app terminates
    the dialog (CMN-11).
 
-If the user abandons a search before step 3, the app cancels that task
+If the user abandons a search before step 3, the app cancels that request
 (A1-2). The dialog continues, and the user can start a new search in
 it without starting over.
 
@@ -339,30 +340,29 @@ interface each applies to.
 | A1-2  | The protocol is required to allow the client to cancel a request that is in progress. | App/Agent-to-Agent | Transport |
 | A1-3  | The protocol is required to define structured error message types that distinguish at minimum: transport failure, tool invocation failure, and agent processing failure. | Both | Transport |
 | A1-4  | The protocol is required to support multiple modalities for both input and output, including real-time audio and video with low latency. | App/Agent-to-Agent | Transport |
-| A1-5  | The protocol is required to support modality negotiation at dialog establishment, allowing the client and agent to agree on which modalities are active for the dialog. | App/Agent-to-Agent | Dialog, Transport |
+| A1-5  | The participants in a dialog are required to be able to agree on, and change, the modalities they use. | Both | Dialog, Transport |
 | A1-6  | The protocol is required to support agent-initiated notifications to the client while a request is in progress. | App/Agent-to-Agent | Transport |
 | A1-7  | The protocol is required to support concurrent invocation of multiple tools to serve a single request, where tools may be operated by distinct providers across different administrative domains, each with independent authentication and authorization requirements. | Agent-to-Tool | Transport, Security |
 | A1-8  | The protocol is required to support bulk transfer of large data between communicating parties, applicable to both agent-to-tool and agent-to-agent interactions. | Both | Transport |
-| A1-9 | A delegation mechanism is required to be defined by which an agent presents to a tool provider a credential attesting the authorization for the requested tool access, without exposing the client's primary credentials. | Agent-to-Tool | Authentication |
-| A1-10 | The protocol is required to preserve the dialog context when a participant transforms data from one modality to another, such as audio to text. | App/Agent-to-Agent | Dialog |
-| A1-11 | The protocol is required to allow the user to continue a dialog from the same client application on another device. | App/Agent-to-Agent | Dialog |
+| A1-9 | The protocol is required to preserve the dialog context when a participant transforms data from one modality to another, such as audio to text. | App/Agent-to-Agent | Dialog |
+| A1-10 | The protocol is required to allow the user to continue a dialog from the same client application on another device. | App/Agent-to-Agent | Dialog |
 
 ## Orchestrator and Agent Collaboration {#orchestrator-agent}
 
 ### Description
 
-An orchestrator agent acts as a controller, decomposing a task into
-subtasks and delegating them asynchronously to one or more other agents.
+An orchestrator agent acts as a controller, decomposing a request into
+sub-requests and delegating them asynchronously to one or more other agents.
 The orchestrator decides which other agents to invoke, sequences the
-delegation, and aggregates results to continue task execution. Each
-agent executes the respective subtask independently and reports results back
+delegation, and aggregates results to complete the request. Each
+agent processes its sub-request independently and reports results back
 to the orchestrator.
 
 It should be noted that AI models are stateless by nature: each inference
 call processes only what is explicitly provided with a particular context,
 with no persistent memory between calls. The application
 layer is responsible for maintaining the context across the calls by
-carrying conversation history, intermediate results, and task
+carrying conversation history, intermediate results, and request
 state. Dialog continuity is therefore required to preserve the
 dialog context across network interruptions, so that a reconnecting
 agent can re-associate with the dialog and use it to restore its own
@@ -384,12 +384,12 @@ and is implemented in deployed multi-agent frameworks including
 
 ~~~
 +---------------------+                        +------------+
-| Orchestrator Agent  |---Task Delegation----->|   Agent-1  |
+| Orchestrator Agent  |---Delegation---------->|   Agent-1  |
 |                     |<--Result Reporting-----|            |
 |                     |                        +------------+
 |                     |
 |                     |                        +------------+
-|                     |---Task Delegation----->|   Agent-2  |
+|                     |---Delegation---------->|   Agent-2  |
 |                     |<--Result Reporting-----|            |
 +---------------------+                        +------------+
 ~~~
@@ -412,7 +412,7 @@ run by different providers.
 ~~~
 
 1. The orchestrator establishes a dialog with each agent and delegates
-   both subtasks without waiting for either to finish (B1-1, B1-2).
+   both sub-requests without waiting for either to finish (B1-1, B1-2).
 
 2. The flight agent streams fare options and reports the booked
    flight (B1-4, B1-3).
@@ -437,19 +437,19 @@ run by different providers.
 |--------|-------------|-----|
 | B1-1  | The protocol is required to allow an orchestrator to delegate a request to an agent, and the agent to acknowledge it. | Transport |
 | B1-2  | The protocol is required to support asynchronous delegation, allowing the orchestrator to delegate to multiple agents without waiting for each to complete before proceeding. | Transport |
-| B1-3  | The protocol is required to define a result reporting message by which an agent returns its completed output to the orchestrator. | Transport |
+| B1-3  | The protocol is required to allow an agent to return its completed output to the orchestrator. | Transport |
 | B1-4  | The protocol is required to support streaming of intermediate results from the agent to the orchestrator while a delegated request is in progress. | Transport |
 | B1-5  | The protocol is required to allow an orchestrator to cancel a request it delegated to an agent. | Transport |
 | B1-6  | The protocol is required to enable a dialog to survive a network interruption or change, and to enable a participant to resume an interrupted dialog with its prior dialog context. | Dialog |
 | B1-7  | On resumption, the protocol is required to enable the receiving participant to verify that (1) the party resuming the dialog is the participant whose exchange was interrupted, (2) the dialog context presented is the current state of that dialog, and (3) the dialog has not been terminated and its authorization has not been revoked. | Dialog, Security |
 | B1-8  | If any check in B1-7 fails or cannot be completed, the dialog is not resumed and the protocol is required to signal the reason. The receiving participant is required to be able to determine whether the check failed or could not be completed. | Dialog, Security |
 
-## Long-Running Delegated Task with Authorization Checkpoint {#authz-checkpoint}
+## Long-Running Delegation with Authorization Checkpoint {#authz-checkpoint}
 
 ### Description
 
-An orchestrator agent delegates a long-running task to other agents.
-The delegated agent executes the task autonomously and sends progress
+An orchestrator agent delegates a long-running request to other agents.
+The delegated agent processes the request autonomously and sends progress
 notifications to the orchestrator. At any certain point one or more delegated
 agents pause and request explicit authorization from the orchestrator
 before proceeding further. The orchestrator may relay this authorization
@@ -462,7 +462,7 @@ defined in [A2A].
 
 ~~~
 +---------------------+                        +------------+
-| Orchestrator Agent  |---Task Delegation----->|            |
+| Orchestrator Agent  |---Delegation---------->|            |
 |                     |<--Progress Notif.------|            |
 |                     |<--Authz Checkpoint-----|  Agent(s)  |
 |                     |---Authz Response------>|            |
@@ -493,10 +493,10 @@ agent, which runs a workflow that can take several days.
 
 3. Before transferring the remaining balance, the closure agent
    pauses and sends an authorization checkpoint request stating the
-   amount and the destination account (B2-2, B2-6).
+   amount and the destination account (B2-1, B2-4).
 
 4. The orchestrator relays the request to the user, who approves it
-   (B2-3). The approval covers only this transfer (B2-5).
+   (B2-2). The approval covers only this transfer (B2-3).
 
 5. The closure agent completes the transfer and reports the result.
 
@@ -507,19 +507,19 @@ and introduces additional requirements specific to authorization checkpoints in 
 
 | REQ-ID | Description | Tag |
 |--------|-------------|-----|
-| B2-2 | The protocol is required to define an authorization checkpoint request, by which an agent pauses its work and asks the orchestrator to authorize a specific action before proceeding. The request is required to describe the action to be performed and the effect it would have, so the orchestrator has enough information to decide. | Transport, Security |
-| B2-3 | The protocol is required to define the responses to an authorization checkpoint request, which include at minimum approve, deny, and approve with modified parameters. A denial is required to be conveyed as an explicit error response. |  Transport, Security |
-| B2-5 | An authorization checkpoint response is required to authorize only the action in the request it answers, including any approved modification to that action, and not any different or later action. | Transport, Security |
-| B2-6 | The protocol is required to support authorization requested and granted at the granularity of a specific operation, so that a sensitive action is authorized individually rather than covered by a broad, pre-existing authorization. | Transport, Security |
+| B2-1 | Before performing a sensitive action, an agent is required to be able to ask the orchestrator for authorization, stating what it would like to do (for example, transferring the remaining balance to a named account), so that the orchestrator can decide whether to authorize it. | Transport, Security |
+| B2-2 | The orchestrator is required to be able to approve the action, deny it, or approve it with changes. |  Transport, Security |
+| B2-3 | An authorization checkpoint response is required to authorize only the action in the request it answers, including any approved modification to that action, and not any different or later action. | Transport, Security |
+| B2-4 | The protocol is required to support authorization requested and granted at the granularity of a specific operation, so that a sensitive action is authorized individually rather than covered by a broad, pre-existing authorization. | Transport, Security |
 
 ## Peer Collaborative Multi-Agent Problem Solving {#peer-collaborative}
 
 ### Description
 
-A task requires coordinated problem solving across multiple agents,
+A request requires coordinated problem solving across multiple agents,
 where no single agent has full authority or capability to complete
-the task alone. The agent that receives the initial request
-dynamically delegates subtasks to peer agents based on their
+it alone. The agent that receives the initial request
+dynamically delegates sub-requests to peer agents based on their
 advertised capabilities. Any agent may itself delegate further to
 other agents and use other tools, forming a dynamic collaboration
 graph. Each agent remains opaque to others, collaborating only
@@ -581,10 +581,10 @@ different provider, in its own administrative domain.
    candidates it finds to the screening agent in another domain, with
    an authorization narrowed to reading their profiles for this
    listing. The sourcing agent returns the screening results to the
-   hiring agent (B3-9).
+   hiring agent (B3-3).
 
 3. If the screening agent becomes unavailable, the sourcing agent
-   detects this and stops work on that request (B3-5).
+   detects this and stops work on that request (B3-2).
 
 4. The hiring manager picks candidates, and the hiring agent delegates
    interview scheduling to the scheduling agent.
@@ -596,10 +596,10 @@ and introduces additional requirements specific to multi-hop delegation chains.
 
 | REQ-ID | Description | Tag |
 |--------|-------------|-----|
-| B3-1  | The protocol is required to support multi-hop delegation chains, where an agent that receives a delegated request may itself delegate further to other agents. | Dialog |
-| B3-5 | The protocol is required to allow a delegating agent to detect that a delegated agent has become unavailable and to stop work on the requests in progress with that agent. | Dialog, Transport |
-| B3-9 | The protocol is required to enable participants to correlate interactions across each hop of a delegation chain. | Dialog |
-| B3-10 | The protocol is required to propagate cancellation of a delegated request, and termination of a dialog, along the delegation chain, and to report to the party that initiated it whether the cancellation or termination took effect further down the chain, or that this could not be determined. | Dialog |
+| B3-1 | The protocol is required to support multi-hop delegation chains, where an agent that receives a delegated request may itself delegate further to other agents. | Dialog |
+| B3-2 | The protocol is required to allow a delegating agent to detect that a delegated agent has become unavailable and to stop work on the requests in progress with that agent. | Dialog, Transport |
+| B3-3 | The protocol is required to enable participants to correlate interactions across each hop of a delegation chain. | Dialog |
+| B3-4 | The protocol is required to propagate cancellation of a delegated request, and termination of a dialog, along the delegation chain, and to report to the party that initiated it whether the cancellation or termination took effect further down the chain, or that this could not be determined. | Dialog |
 
 ## Cooperative Reasoning and Consensus Formation {#cooperative-reasoning}
 
@@ -612,7 +612,7 @@ the problem to all participating agents, collects their reasoning
 outputs, and drives the convergence process across multiple rounds
 until a consensus conclusion is reached. Unlike
 {{peer-collaborative}}, all agents work on the same problem rather
-than different subtasks.
+than different sub-requests.
 
 Two communication topologies are possible. In the first, agents
 communicate only through the orchestrator, which acts as the central
@@ -792,16 +792,18 @@ Security for agent communication reuses existing work:
 
   - the scope delegated to an agent (CMN-4);
 
-  - narrowing that scope at each hop of a delegation chain, so that each
-    agent's authorization derives from the original authorization and
-    does not exceed it;
+  - narrowing that scope at each hop, so that every participant acts
+    only within the original authorization;
+
+  - presenting to a tool provider a credential for the requested access,
+    without exposing the client's own credentials;
 
   - conveying the identity of the entity that originally authorized the
     request;
 
   - detecting a delegation chain that contains a cycle;
 
-  - authorizing an individual action (B2-5, B2-6).
+  - authorizing an individual action (B2-3, B2-4).
 
 - OAuth and WIMSE: carrying credentials, and verifying them at the time
   of use (CMN-8).
@@ -809,8 +811,8 @@ Security for agent communication reuses existing work:
 The dialog management protocol relies on this work and does not itself
 verify identity or authorization. It is required to:
 
-- carry an authorization checkpoint request and its response (B2-2,
-  B2-3);
+- carry an authorization checkpoint request and its response (B2-1,
+  B2-2);
 
 - return an error for a scope violation (CMN-4) or a rejected
   credential (CMN-9);
@@ -838,10 +840,10 @@ The gaps are end to end:
 
 - correlating a dialog across hops, connections, and protocols,
   including through a mediator that translates between protocols
-  (B3-9, B5-3);
+  (B3-3, B5-3);
 
 - propagating cancellation and termination along the delegation chain,
-  and reporting whether they took effect (B3-10), and propagating a
+  and reporting whether they took effect (B3-4), and propagating a
   revocation (CMN-10);
 
 - establishing, modifying, and terminating a dialog, and verifying that
@@ -880,7 +882,7 @@ while preserving the ability to audit and enforce accountability
 where required. The trade-offs between privacy, accountability,
 and traceability need to be considered in the design of agent identity mechanisms.
 
-Agent unavailability (B3-5) stops work on the affected requests but does not imply
+Agent unavailability (B3-2) stops work on the affected requests but does not imply
 revocation, since it may be a transient failure rather than compromise.
 
 Signaled error reasons help a participant decide on the right course
